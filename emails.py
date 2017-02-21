@@ -1,11 +1,8 @@
 import urllib2, ssl, json, re, sys
-
-#add usernames
-listUsers = ['iskra', 'fandemic', 'emglamguru']
+context = ssl._create_unverified_context()
 
 def getEmail(account):
     url = 'https://www.instagram.com/' + account + '/?__a=1'
-    context = ssl._create_unverified_context()
     response = urllib2.urlopen(url, context=context)
     for line in response:
         jsonContent = json.loads(line)
@@ -16,16 +13,22 @@ def getEmail(account):
     except:
         return False
 
-def buildDict():
-    dictUsers = []
-    for user in listUsers:
-        if getEmail(user):
+
+query = 'beauty'
+url = 'https://www.instagram.com/web/search/topsearch/?query=' + str(query)
+dictUsers = []
+response = urllib2.urlopen(url, context=context)
+
+for line in response:
+    jsonContent = json.loads(line)['users']
+    for u in jsonContent:
+        username = u['user']['username']
+        if getEmail(username):
             u = {}
-            u['user'] = user
-            u['email'] = getEmail(user)
+            u['user'] = username
+            u['email'] = getEmail(username)
             u['lead'] = False
             u['day'] = 0
+            print username + ' has been added!'
             dictUsers.append(u)
-    return dictUsers
-
-print buildDict()
+print dictUsers
