@@ -1,6 +1,11 @@
 import urllib2, ssl, json, re, sys
 context = ssl._create_unverified_context()
 
+
+query = 'beauty'
+url = 'https://www.instagram.com/web/search/topsearch/?query=' + str(query)
+dictUsers = []
+
 def getEmail(account):
     url = 'https://www.instagram.com/' + account + '/?__a=1'
     response = urllib2.urlopen(url, context=context)
@@ -12,13 +17,8 @@ def getEmail(account):
         return email.group(0)
     except:
         return False
-
-
-query = 'beauty'
-url = 'https://www.instagram.com/web/search/topsearch/?query=' + str(query)
-dictUsers = []
+    
 response = urllib2.urlopen(url, context=context)
-
 for line in response:
     jsonContent = json.loads(line)['users']
     for u in jsonContent:
@@ -29,6 +29,6 @@ for line in response:
             u['email'] = getEmail(username)
             u['lead'] = False
             u['day'] = 0
-            print username + ' has been added!'
+            print u
             dictUsers.append(u)
 print dictUsers
